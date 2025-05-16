@@ -1,0 +1,105 @@
+git# Megatron — A From-Scratch Character-Level Transformer Model
+
+Megatron is my attempt at building a character-level Transformer model completely from scratch using PyTorch. No fancy pretrained stuff — just raw code that learns to generate text one character at a time, based on whatever data you feed it.
+
+---
+
+## What’s This About?
+
+Unlike word-level models, Megatron treats each character as a token, meaning it works on the smallest building blocks of text. Using a Transformer architecture with multi-head self-attention, it learns patterns in sequences of characters and can then generate new text that kinda makes sense in that style.
+
+It's inspired by big language models but stripped down to the basics so you can see how the magic actually happens under the hood.
+
+---
+
+## Why Should You Care?
+
+* Super simple character tokenizer — no complicated vocab stuff
+* Classic Transformer blocks with positional embeddings
+* Causal masking to avoid cheating by looking ahead in the sequence
+* Training loop that’s easy to follow, using AdamW optimizer and cross-entropy loss
+* A straightforward text generator function for creative prompt completion
+* Saves the trained model so you don’t lose your progress
+
+---
+
+## How to Use Megatron?
+
+1. **Prepare Your Data:**
+   Throw your text corpus into a file named `data.txt`. Could be a novel, code snippets, or even song lyrics.
+
+2. **Train the Model:**
+   Run the training script or notebook cells:
+
+   ```bash
+   python train.py
+   ```
+
+   You’ll see loss updates every 100 steps, and after training, the model saves to `megatron_trained_model.pt`.
+
+3. **Generate Text:**
+   Load your model and tokenizer, then feed it a prompt to see what it comes up with:
+
+   ```python
+   import torch
+   from megatron import TransformerModel, CharTokenizer, generate
+
+   text = open("data.txt").read()
+   tokenizer = CharTokenizer(text)
+
+   model = TransformerModel(tokenizer.vocab_size, block_size=256, embed_dim=512, heads=16, layers=16, ff_dim=4096)
+   model.load_state_dict(torch.load("megatron_trained_model.pt"))
+
+   prompt = "Once upon a time"
+   output = generate(model, tokenizer, prompt, max_new_tokens=100)
+   print(output)
+   ```
+
+---
+
+## Important Hyperparameters
+
+* `block_size`: 256 — max sequence length per batch
+* `batch_size`: 128 — how many sequences per training step
+* `embed_dim`: 512 — token embedding dimension
+* `heads`: 16 — number of attention heads
+* `layers`: 16 — number of Transformer blocks stacked
+* `ff_dim`: 4096 — feed-forward layer dimension
+* `steps`: 20,000 — training iterations
+* Learning rate: 3e-4
+
+Feel free to tweak these in the code to experiment.
+
+---
+
+## How It Works (Briefly)
+
+* **Tokenizer:** Converts characters to integers and back
+* **Model:** Embeds tokens + positions, passes through Transformer blocks
+* **TransformerBlock:** Multi-head attention + feed-forward layers with residual connections
+* **Attention:** Scaled dot-product attention split across heads
+* **Training:** Samples batches, predicts next character, optimizes cross-entropy loss
+* **Generation:** Autoregressive sampling from learned distributions
+
+---
+
+## Notes
+
+* This project is meant for learning and experimentation, not production-level training
+* Training on larger and cleaner datasets will yield better text generation
+* There’s tons of room to add features — like better sampling, layer norm tweaks, or different tokenizers
+
+---
+
+## Credits and Inspiration
+
+* The original "Attention Is All You Need" paper by Vaswani et al. (2017)
+* PyTorch tutorials for building Transformer models
+
+
+
+Made with ❤️ by Rohit Patra
+kumarearick@outlook.com
+Date: 2025-05-16
+
+
